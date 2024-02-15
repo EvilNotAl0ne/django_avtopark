@@ -1,12 +1,9 @@
-import datetime
-
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
 
+from .models import Driver
 
-from .models import Driver, Car, CarBrand, Client
-from AutoparkProject.settings import DATE_INPUT_FORMATS
 
 class RegistrationFrom(UserCreationForm):
     password1 = forms.CharField(label='Пароль', widget=forms.PasswordInput)
@@ -31,7 +28,3 @@ class DriverForm(forms.ModelForm):
     class Meta:
         model = Driver
         exclude = ["user", "is_available"]
-
-
-
-
