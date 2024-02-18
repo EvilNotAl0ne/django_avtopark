@@ -8,19 +8,20 @@ from .models import Driver
 class RegistrationFrom(UserCreationForm):
     password1 = forms.CharField(label='Пароль', widget=forms.PasswordInput)
     password2 = forms.CharField(label='Повторить пароль', widget=forms.PasswordInput)
+
     class Meta:
         model = User
         fields = ["username", "email"]
         
         labels = {
-        'username': 'Логин',
-        'email': 'Эл. почта',
-        'password1': 'Пароль',
-        'password2': 'Повторить пароль',
+            'username': 'Логин',
+            'email': 'Эл. почта',
+            'password1': 'Пароль',
+            'password2': 'Повторить пароль',
         }
         help_text = {
-        'username': '',
-        'password1': '',
+            'username': '',
+            'password1': '',
         }
 
 class DriverForm(forms.ModelForm):

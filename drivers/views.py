@@ -5,6 +5,7 @@ from django.contrib.auth import authenticate, login, logout
 from .forms import RegistrationFrom, DriverForm
 from AutoparkProject.utils import calculate_age
 from AutoparkProject.settings import LOGIN_REDIRECT_URL
+from employees.models import Car
 
 def index(request):
     title = "Главная страница"
@@ -19,11 +20,11 @@ def register(request):
 
         if reg_form.is_valid() and driver_form.is_valid():
             user = reg_form.save()
-            driver = driver_form.seve(commit=False)
+            driver = driver_form.save(commit=False)
             driver.user = user
             driver.age = calculate_age(driver.birthday)
-            driver.seve()
-            # return redirect("driver_profile")
+            driver.save()
+            #return redirect("driver_profile")
             return register_done(request, new_user=driver)
         
     # Для метода GET   
@@ -41,17 +42,31 @@ def register_done(request, new_user):
 
 
 def log_in(request):
-    form = AuthenticationForm(request)
+    form = AuthenticationForm(request, data=request.POST or None)
+    if request.method == "POST":
 
-    if form.is_valid():
-        username = form.cleaned_data['username']
-        password = form.cleaned_data['password']
 
-        user = authenticate(username, password)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
 
-        if user is not None:
-            login(request, user)
-            url = request.GET.get('next', LOGIN_REDIRECT_URL)
-            return redirect(url)
+            user = authenticate(username, password)
+
+            if user is not None:
+                login(request, user)
+                url = request.GET.get('next', LOGIN_REDIRECT_URL)
+                return redirect(url)
     
     return render(request, 'drivers/login.html', {'form': form, 'title': "Вход"})
+
+def log_out(request):
+    logout(request)
+    url = LOGIN_REDIRECT_URL
+    return register(url)
+
+def select_car(request):
+    title = "Выберите машину"
+    cars = Car.objects.filter(status=True)
+    context = {"title": title, "cars": cars}
+
+    return render(request, "drivers/select_car.html", context=context)
