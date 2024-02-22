@@ -44,13 +44,11 @@ def register_done(request, new_user):
 def log_in(request):
     form = AuthenticationForm(request, data=request.POST or None)
     if request.method == "POST":
-
-
         if form.is_valid():
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
 
-            user = authenticate(username, password)
+            user = authenticate(username=username, password=password)
 
             if user is not None:
                 login(request, user)
