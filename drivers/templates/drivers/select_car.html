@@ -5,12 +5,29 @@
 {% load thumbnail %}
 <link rel="stylesheet" href="{% static 'css/cars.css' %}" tupe="text/css">
 
+<script>
+    function selectCar(carId) {
+        let car = {
+            id: carId
+        }
+        let response = await fetch('/test_fetch/',{
+            method: "POST",
+            headers: {
+                "Content-Type": "application/Json"
+            },
+            body: JSON.stringify(car)
+        });
+        let result = await response.json()
+    }
+
+</script>
+
 <div class="cars">
     {% for car in cars %}
     <div class="car"> 
         {% if car.imge %}
             {% thumbnail car.image "300" as im %}
-                <img src="{{im.url}}">
+                <img src="{{im.url}}" />
             {% endthumbnail %}
         {% else %}
             <img width="300" src="/static/img/no_img.jpg">
@@ -20,7 +37,12 @@
         <p> Цвет - {{car.color}}</p>
         <p> Год выпуска - {{car.year}}</p>
         <p> Класс - {{car.category}}</p>
-        
+        <p>
+        <p>
+            <a href="{% url 'drivers:select_car' pk=car.id %}" class="btn btn-lg">Выбрать</a>
+        </p>
+        <button onclick="selectCar('{{car.id}}')"> Выбор JS </button>
+    </div> 
     {% endfor %}
-
+</div>
 {% endblock content %}
