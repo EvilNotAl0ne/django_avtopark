@@ -2,11 +2,14 @@ from django.shortcuts import redirect, render
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 
 from .forms import RegistrationFrom, DriverForm
 from AutoparkProject.utils import calculate_age
 from AutoparkProject.settings import LOGIN_REDIRECT_URL
+
 from employees.models import Car
+from drivers.models import CarDriver, Driver
 
 def index(request):
     title = "Главная страница"
@@ -67,18 +70,33 @@ def select_car(request, pk=None):
     if request.method == "GET":
         title = "Выберите машину"
         cars = Car.objects.filter(status=True)
-        context = {"title": title, "cars": cars}
+        car_count = Car.objects.filter(status=True).count()
+        context = {"title": title, "cars": cars, "count": car_count}
     if pk is not None:
-        print(pk)
-        car = Car.objects.get(pk=pk)
+        car = Car.objects.get(pk=pk) 
         car.status = False
         car.save()
+
+        driver = Driver.objects.get(user=request.user)
+        CarDriver.objects.create(car=car, driver=driver)
         return redirect("drivers:index")
 
     
     return render(request, "drivers/select_car.html", context=context)
 
+@csrf_exempt
 def test_fetch(request):
-    car_id = request.POST.get("carId")
-    return JsonResponse(car)
+    if request.method == "POST":
+        json_data = json.loads(request.body)
+        car_id = json_data.get('id')
 
+        return JsonResponse({'car_id': car_id})
+
+
+def profile(request):
+    driver = Driver.objects.get(pk=pk)
+    car_driver = CarDriver.objects.filter(driver=driver).first()
+    car = car_driver.car
+
+    context = {'drivers': driver, 'car': car }
+    return redirect(request, 'drivers/profile.html', context=context)

@@ -6,22 +6,25 @@
 <link rel="stylesheet" href="{% static 'css/cars.css' %}" tupe="text/css">
 
 <script>
-    function selectCar(carId) {
+    async function selectCar(carId) {
         let car = {
-            id: carId
-        }
-        let response = await fetch('/test_fetch/',{
+            id: carId,
+        };
+
+        let response = await fetch('/drivers/test_fetch/', {
             method: "POST",
-            headers: {
-                "Content-Type": "application/Json"
-            },
-            body: JSON.stringify(car)
+            headers: {"Content-Type": "application/json", 'X-CSRFToken': '{% csrf_token %}' },
+            body: JSON.stringify(car),
+            credentials: 'same-origin',
         });
-        let result = await response.json()
+        let result = await response.json();
     }
 
 </script>
 
+<div class="car_count">
+    Колисчество доступных машин: <span>{{count}}</span>
+</div>
 <div class="cars">
     {% for car in cars %}
     <div class="car"> 
@@ -38,11 +41,12 @@
         <p> Год выпуска - {{car.year}}</p>
         <p> Класс - {{car.category}}</p>
         <p>
-        <p>
             <a href="{% url 'drivers:select_car' pk=car.id %}" class="btn btn-lg">Выбрать</a>
         </p>
         <button onclick="selectCar('{{car.id}}')"> Выбор JS </button>
     </div> 
+
     {% endfor %}
 </div>
+
 {% endblock content %}

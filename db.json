@@ -1,0 +1,58 @@
+[
+{
+  "model": "employees.carbrand",
+  "pk": 1,
+  "fields": {
+    "name": "BMW"
+  }
+},
+{
+  "model": "employees.carbrand",
+  "pk": 2,
+  "fields": {
+    "name": "mazda"
+  }
+},
+{
+  "model": "employees.car",
+  "pk": 1,
+  "fields": {
+    "brand": 1,
+    "model": "3",
+    "color": "black",
+    "power": 123,
+    "year": 2023,
+    "image": "",
+    "category": "comfort+",
+    "status": false
+  }
+},
+{
+  "model": "employees.car",
+  "pk": 2,
+  "fields": {
+    "brand": 2,
+    "model": "6",
+    "color": "red",
+    "power": 139,
+    "year": 2023,
+    "image": "",
+    "category": "comfort",
+    "status": false
+  }
+},
+{
+  "model": "employees.car",
+  "pk": 3,
+  "fields": {
+    "brand": 1,
+    "model": "5",
+    "color": "blue",
+    "power": 250,
+    "year": 2023,
+    "image": "",
+    "category": "comfort+",
+    "status": false
+  }
+}
+]
