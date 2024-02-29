@@ -11,7 +11,7 @@
         {% endif %}
 
         {% if not user.is_authenticated %}
-            <p>Привет, {{user.driver.name}} {{user.driver.lastname}}!</p>
+            <p>Привет, {{user.driver.name}} {{user.driver.lastname}} !</p>
             <a href="{% url 'drivers:logout' %}"> Выйти </a></p>
         {% endif %}
 

@@ -1,8 +1,10 @@
+import json
 from django.shortcuts import redirect, render
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
 
 from .forms import RegistrationFrom, DriverForm
 from AutoparkProject.utils import calculate_age
@@ -45,7 +47,7 @@ def register_done(request, new_user):
     return render(request, "drivers/register_done.html", context=context)
 
 
-def log_in(request):
+def  log_in(request):
     form = AuthenticationForm(request, data=request.POST or None)
     if request.method == "POST":
         if form.is_valid():
@@ -66,12 +68,26 @@ def log_out(request):
     url = LOGIN_REDIRECT_URL
     return register(url)
 
+
+@login_required
 def select_car(request, pk=None):
+
     if request.method == "GET":
         title = "Выберите машину"
         cars = Car.objects.filter(status=True)
         car_count = Car.objects.filter(status=True).count()
         context = {"title": title, "cars": cars, "count": car_count}
+
+    if request.method == "POST":
+        car_id = request.POST.get('car_id')
+        new_car = Car.objects.get(pk=car_id)
+
+        driver = Driver.objects.get(user=request.user)
+        if driver.cardriver_set.first() is not None:
+            if driver.cardriver_set.first().car is not None:
+
+        pass
+
     if pk is not None:
         car = Car.objects.get(pk=pk) 
         car.status = False
@@ -93,10 +109,25 @@ def test_fetch(request):
         return JsonResponse({'car_id': car_id})
 
 
+@login_required
 def profile(request):
     driver = Driver.objects.get(pk=pk)
     car_driver = CarDriver.objects.filter(driver=driver).first()
-    car = car_driver.car
+
+    if car_driver is not None:
+        car = car_driver.car
+    
+    else:
+        car = None
 
     context = {'drivers': driver, 'car': car }
     return redirect(request, 'drivers/profile.html', context=context)
+
+def refuse_car(request):
+    if 'refuse' in request.POST:
+        driver = Driver.objects.get(user=request.user)
+        driver.cardriver_set.first().car.status = False
+        driver.cardriver_set.first().delete()
+        return redirect("drivers:profile")
+    else:
+        return redirect("drivers:profile")
