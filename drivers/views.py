@@ -77,17 +77,30 @@ def select_car(request, pk=None):
         cars = Car.objects.filter(status=True)
         car_count = Car.objects.filter(status=True).count()
         context = {"title": title, "cars": cars, "count": car_count}
+        return render(request, "drivers/select_car.html", context=context)
+    
 
     if request.method == "POST":
         car_id = request.POST.get('car_id')
-        new_car = Car.objects.get(pk=car_id)
+        new_car = Car.objects.get(pk=car_id) 
 
         driver = Driver.objects.get(user=request.user)
+        # если в таблице связи водитель-машина есть
         if driver.cardriver_set.first() is not None:
             if driver.cardriver_set.first().car is not None:
+                current_car_id = driver.cardriver_set.first().car.id 
+                current_car = Car.objects.get(pk=current_car_id) 
+                current_car.status=True
 
-        pass
+        else:
+            CarDriver.objects.create(driver=driver, car=new_car)
+            
+        new_car.status = False
+        new_car.save()
 
+        return redirect(to="drivers:profile", pk=request.user.pk)
+    
+            
     if pk is not None:
         car = Car.objects.get(pk=pk) 
         car.status = False
@@ -110,7 +123,7 @@ def test_fetch(request):
 
 
 @login_required
-def profile(request):
+def profile(request, pk):
     driver = Driver.objects.get(pk=pk)
     car_driver = CarDriver.objects.filter(driver=driver).first()
 
